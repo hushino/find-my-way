@@ -6,11 +6,7 @@
   "typings": "index.d.ts",
   "scripts": {
     "bench": "node bench.js",
-    "test:lint": "standard",
-    "test:typescript": "tsc --project ./test/types/tsconfig.json",
-    "test": "standard && tap -J test/*.test.js && npm run test:typescript",
-    "test:report": "tap -J test/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
-    "test:reporter": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml"
+   
   },
   "repository": {
     "type": "git",
