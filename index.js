@@ -33,14 +33,14 @@ function Router (opts) {
   opts = opts || {}
 
   if (opts.defaultRoute) {
-    assert(typeof opts.defaultRoute === 'function', 'The default route must be a function')
+    //assert(typeof opts.defaultRoute === 'function', 'The default route must be a function')
     this.defaultRoute = opts.defaultRoute
   } else {
     this.defaultRoute = null
   }
 
   if (opts.onBadUrl) {
-    assert(typeof opts.onBadUrl === 'function', 'The bad url handler must be a function')
+    //assert(typeof opts.onBadUrl === 'function', 'The bad url handler must be a function')
     this.onBadUrl = opts.onBadUrl
   } else {
     this.onBadUrl = null
@@ -64,11 +64,11 @@ Router.prototype.on = function on (method, path, opts, handler, store) {
     opts = {}
   }
   // path validation
-  assert(typeof path === 'string', 'Path should be a string')
+  /* assert(typeof path === 'string', 'Path should be a string')
   assert(path.length > 0, 'The path could not be empty')
-  assert(path[0] === '/' || path[0] === '*', 'The first character of a path should be `/` or `*`')
+  assert(path[0] === '/' || path[0] === '*', 'The first character of a path should be `/` or `*`') */
   // handler validation
-  assert(typeof handler === 'function', 'Handler should be a function')
+  //assert(typeof handler === 'function', 'Handler should be a function')
 
   this._on(method, path, opts, handler, store)
 
@@ -83,18 +83,18 @@ Router.prototype.on = function on (method, path, opts, handler, store) {
 
 Router.prototype._on = function _on (method, path, opts, handler, store) {
   if (Array.isArray(method)) {
-    for (var k = 0; k < method.length; k++) {
+    for (let k = 0; k < method.length; k++) {
       this._on(method[k], path, opts, handler, store)
     }
     return
   }
 
   // method validation
-  assert(typeof method === 'string', 'Method should be a string')
-  assert(httpMethods.indexOf(method) !== -1, `Method '${method}' is not an http method.`)
+/*   assert(typeof method === 'string', 'Method should be a string')
+  assert(httpMethods.indexOf(method) !== -1, `Method '${method}' is not an http method.`) */
 
   const params = []
-  var j = 0
+  let j = 0
 
   this.routes.push({
     method: method,
@@ -106,13 +106,13 @@ Router.prototype._on = function _on (method, path, opts, handler, store) {
 
   const version = opts.version
 
-  for (var i = 0, len = path.length; i < len; i++) {
+  for (let i = 0, len = path.length; i < len; i++) {
     // search for parametric or wildcard routes
     // parametric route
     if (path.charCodeAt(i) === 58) {
-      var nodeType = NODE_TYPES.PARAM
+      let nodeType = NODE_TYPES.PARAM
       j = i + 1
-      var staticPart = path.slice(0, i)
+      let staticPart = path.slice(0, i)
 
       if (this.caseSensitive === false) {
         staticPart = staticPart.toLowerCase()
@@ -122,7 +122,7 @@ Router.prototype._on = function _on (method, path, opts, handler, store) {
       this._insert(method, staticPart, NODE_TYPES.STATIC, null, null, null, null, version)
 
       // isolate the parameter name
-      var isRegex = false
+      let isRegex = false
       while (i < len && path.charCodeAt(i) !== 47) {
         isRegex = isRegex || path[i] === '('
         if (isRegex) {
@@ -141,13 +141,13 @@ Router.prototype._on = function _on (method, path, opts, handler, store) {
         nodeType = NODE_TYPES.MULTI_PARAM
       }
 
-      var parameter = path.slice(j, i)
-      var regex = isRegex ? parameter.slice(parameter.indexOf('('), i) : null
+      let parameter = path.slice(j, i)
+      let regex = isRegex ? parameter.slice(parameter.indexOf('('), i) : null
       if (isRegex) {
         regex = new RegExp(regex)
-        if (!this.allowUnsafeRegex) {
+       /*  if (!this.allowUnsafeRegex) {
           assert(isRegexSafe(regex), `The regex '${regex.toString()}' is not safe!`)
-        }
+        } */
       }
       params.push(parameter.slice(0, isRegex ? parameter.indexOf('(') : i))
 
@@ -157,7 +157,7 @@ Router.prototype._on = function _on (method, path, opts, handler, store) {
 
       // if the path is ended
       if (i === len) {
-        var completedPath = path.slice(0, i)
+        let completedPath = path.slice(0, i)
         if (this.caseSensitive === false) {
           completedPath = completedPath.toLowerCase()
         }
@@ -190,13 +190,13 @@ Router.prototype._on = function _on (method, path, opts, handler, store) {
 
 Router.prototype._insert = function _insert (method, path, kind, params, handler, store, regex, version) {
   const route = path
-  var currentNode = this.tree
-  var prefix = ''
-  var pathLen = 0
-  var prefixLen = 0
-  var len = 0
-  var max = 0
-  var node = null
+  let currentNode = this.tree
+  let prefix = ''
+  let pathLen = 0
+  let prefixLen = 0
+  let len = 0
+  let max = 0
+  let node = null
 
   while (true) {
     prefix = currentNode.prefix
@@ -232,10 +232,10 @@ Router.prototype._insert = function _insert (method, path, kind, params, handler
       // the handler should be added to the current node, to a child otherwise
       if (len === pathLen) {
         if (version) {
-          assert(!currentNode.getVersionHandler(version, method), `Method '${method}' already declared for route '${route}' version '${version}'`)
+         // assert(!currentNode.getVersionHandler(version, method), `Method '${method}' already declared for route '${route}' version '${version}'`)
           currentNode.setVersionHandler(version, method, handler, params, store)
         } else {
-          assert(!currentNode.getHandler(method), `Method '${method}' already declared for route '${route}'`)
+        // assert(!currentNode.getHandler(method), `Method '${method}' already declared for route '${route}'`)
           currentNode.setHandler(method, handler, params, store)
         }
         currentNode.kind = kind
@@ -280,10 +280,10 @@ Router.prototype._insert = function _insert (method, path, kind, params, handler
     // the node already exist
     } else if (handler) {
       if (version) {
-        assert(!currentNode.getVersionHandler(version, method), `Method '${method}' already declared for route '${route}' version '${version}'`)
+        //assert(!currentNode.getVersionHandler(version, method), `Method '${method}' already declared for route '${route}' version '${version}'`)
         currentNode.setVersionHandler(version, method, handler, params, store)
       } else {
-        assert(!currentNode.getHandler(method), `Method '${method}' already declared for route '${route}'`)
+       // assert(!currentNode.getHandler(method), `Method '${method}' already declared for route '${route}'`)
         currentNode.setHandler(method, handler, params, store)
       }
     }
@@ -297,7 +297,7 @@ Router.prototype.reset = function reset () {
 }
 
 Router.prototype.off = function off (method, path) {
-  var self = this
+  let self = this
 
   if (Array.isArray(method)) {
     return method.map(function (method) {
@@ -306,16 +306,16 @@ Router.prototype.off = function off (method, path) {
   }
 
   // method validation
-  assert(typeof method === 'string', 'Method should be a string')
-  assert(httpMethods.indexOf(method) !== -1, `Method '${method}' is not an http method.`)
+ /*  assert(typeof method === 'string', 'Method should be a string')
+  assert(httpMethods.indexOf(method) !== -1, `Method '${method}' is not an http method.`) */
   // path validation
-  assert(typeof path === 'string', 'Path should be a string')
+/*   assert(typeof path === 'string', 'Path should be a string')
   assert(path.length > 0, 'The path could not be empty')
-  assert(path[0] === '/' || path[0] === '*', 'The first character of a path should be `/` or `*`')
+  assert(path[0] === '/' || path[0] === '*', 'The first character of a path should be `/` or `*`') */
 
   // Rebuild tree without the specific route
   const ignoreTrailingSlash = this.ignoreTrailingSlash
-  var newRoutes = self.routes.filter(function (route) {
+  let newRoutes = self.routes.filter(function (route) {
     if (!ignoreTrailingSlash) {
       return !(method === route.method && path === route.path)
     }
@@ -343,7 +343,7 @@ Router.prototype.off = function off (method, path) {
 }
 
 Router.prototype.lookup = function lookup (req, res, ctx) {
-  var handle = this.find(req.method, sanitizeUrl(req.url), this.versioning.deriveVersion(req, ctx))
+  let handle = this.find(req.method, sanitizeUrl(req.url), this.versioning.deriveVersion(req, ctx))
   if (handle === null) return this._defaultRoute(req, res, ctx)
   return ctx === undefined
     ? handle.handler(req, res, handle.params, handle.store)
@@ -355,38 +355,38 @@ Router.prototype.find = function find (method, path, version) {
     path = path.replace(FULL_PATH_REGEXP, '/')
   }
 
-  var originalPath = path
-  var originalPathLength = path.length
+  let originalPath = path
+  let originalPathLength = path.length
 
   if (this.caseSensitive === false) {
     path = path.toLowerCase()
   }
 
-  var maxParamLength = this.maxParamLength
-  var currentNode = this.tree
-  var wildcardNode = null
-  var pathLenWildcard = 0
-  var decoded = null
-  var pindex = 0
-  var params = []
-  var i = 0
-  var idxInOriginalPath = 0
+  let maxParamLength = this.maxParamLength
+  let currentNode = this.tree
+  let wildcardNode = null
+  let pathLenWildcard = 0
+  let decoded = null
+  let pindex = 0
+  let params = []
+  let i = 0
+  let idxInOriginalPath = 0
 
   while (true) {
-    var pathLen = path.length
-    var prefix = currentNode.prefix
-    var prefixLen = prefix.length
-    var len = 0
-    var previousPath = path
+    let pathLen = path.length
+    let prefix = currentNode.prefix
+    let prefixLen = prefix.length
+    let len = 0
+    let previousPath = path
     // found the route
     if (pathLen === 0 || path === prefix) {
-      var handle = version === undefined
+      let handle = version === undefined
         ? currentNode.handlers[method]
         : currentNode.getVersionHandler(version, method)
       if (handle !== null && handle !== undefined) {
-        var paramsObj = {}
+        let paramsObj = {}
         if (handle.paramsLength > 0) {
-          var paramNames = handle.params
+          let paramNames = handle.params
 
           for (i = 0; i < handle.paramsLength; i++) {
             paramsObj[paramNames[i]] = params[i]
@@ -411,7 +411,7 @@ Router.prototype.find = function find (method, path, version) {
       idxInOriginalPath += len
     }
 
-    var node = version === undefined
+    let node = version === undefined
       ? currentNode.findChild(path, method)
       : currentNode.findVersionChild(version, path, method)
 
@@ -425,7 +425,7 @@ Router.prototype.find = function find (method, path, version) {
         // we need to know the outstanding path so far from the originalPath since the last encountered "/" and assign it to previousPath.
         // e.g originalPath: /aa/bbb/cc, path: bb/cc
         // outstanding path: /bbb/cc
-        var pathDiff = originalPath.slice(0, originalPathLength - pathLen)
+        let pathDiff = originalPath.slice(0, originalPathLength - pathLen)
         previousPath = pathDiff.slice(pathDiff.lastIndexOf('/') + 1, pathDiff.length) + path
       }
       idxInOriginalPath = idxInOriginalPath -
@@ -435,7 +435,7 @@ Router.prototype.find = function find (method, path, version) {
       len = prefixLen
     }
 
-    var kind = node.kind
+    let kind = node.kind
 
     // static route
     if (kind === NODE_TYPES.STATIC) {
@@ -514,7 +514,7 @@ Router.prototype.find = function find (method, path, version) {
       currentNode = node
       i = 0
       if (node.regex !== null) {
-        var matchedParameter = path.match(node.regex)
+        let matchedParameter = path.match(node.regex)
         if (matchedParameter === null) return null
         i = matchedParameter[1].length
       } else {
@@ -539,13 +539,13 @@ Router.prototype.find = function find (method, path, version) {
 
 Router.prototype._getWildcardNode = function (node, method, path, len) {
   if (node === null) return null
-  var decoded = fastDecode(path.slice(-len))
+  let decoded = fastDecode(path.slice(-len))
   if (decoded === null) {
     return this.onBadUrl !== null
       ? this._onBadUrl(path.slice(-len))
       : null
   }
-  var handle = node.handlers[method]
+  let handle = node.handlers[method]
   if (handle !== null && handle !== undefined) {
     return {
       handler: handle.handler,
@@ -580,7 +580,7 @@ Router.prototype.prettyPrint = function () {
   return this.tree.prettyPrint('', true)
 }
 
-for (var i in http.METHODS) {
+for (let i in http.METHODS) {
   if (!http.METHODS.hasOwnProperty(i)) continue
   const m = http.METHODS[i]
   const methodName = m.toLowerCase()
@@ -599,8 +599,8 @@ Router.prototype.all = function (path, handler, store) {
 module.exports = Router
 
 function sanitizeUrl (url) {
-  for (var i = 0, len = url.length; i < len; i++) {
-    var charCode = url.charCodeAt(i)
+  for (let i = 0, len = url.length; i < len; i++) {
+    let charCode = url.charCodeAt(i)
     // Some systems do not follow RFC and separate the path and query
     // string with a `;` character (code 59), e.g. `/foo;jsessionid=123456`.
     // Thus, we need to split on `;` as well as `?` and `#`.
@@ -616,7 +616,7 @@ function getClosingParenthensePosition (path, idx) {
   // but it's inefficient for grouped or wrong regexp expressions.
   // see issues #62 and #63 for more info
 
-  var parentheses = 1
+  let parentheses = 1
 
   while (idx < path.length) {
     idx++

@@ -33,17 +33,17 @@
   },
   "homepage": "https://github.com/delvedor/find-my-way#readme",
   "devDependencies": {
-    "@types/node": "^11.9.4",
+    "@types/node": "^12.12.7",
     "benchmark": "^2.1.4",
     "pre-commit": "^1.2.2",
     "request": "^2.88.0",
     "standard": "^12.0.1",
     "tap": "^12.5.3",
     "tap-mocha-reporter": "^3.0.9",
-    "typescript": "^3.3.3"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
-    "fast-decode-uri-component": "^1.0.0",
+    "fast-decode-uri-component": "^1.0.1",
     "safe-regex2": "^2.0.0",
     "semver-store": "^0.3.0"
   }

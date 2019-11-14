@@ -37,7 +37,7 @@ Node.prototype.getLabel = function () {
 }
 
 Node.prototype.addChild = function (node) {
-  var label = ''
+  const label = ''
   switch (node.kind) {
     case this.types.STATIC:
       label = node.getLabel()
@@ -55,17 +55,17 @@ Node.prototype.addChild = function (node) {
       throw new Error(`Unknown node kind: ${node.kind}`)
   }
 
-  assert(
+/*   assert(
     this.children[label] === undefined,
     `There is already a child with label '${label}'`
-  )
+  ) */
 
   this.children[label] = node
   this.numberOfChildren = Object.keys(this.children).length
 
   const labels = Object.keys(this.children)
-  var parametricBrother = this.parametricBrother
-  for (var i = 0; i < labels.length; i++) {
+  let parametricBrother = this.parametricBrother
+  for (let i = 0; i < labels.length; i++) {
     const child = this.children[labels[i]]
     if (child.label === ':') {
       parametricBrother = child
@@ -88,7 +88,7 @@ Node.prototype.addChild = function (node) {
     }
 
     const labels = Object.keys(node.children)
-    for (var i = 0; i < labels.length; i++) {
+    for (let i = 0; i < labels.length; i++) {
       iterate(node.children[labels[i]])
     }
   }
@@ -115,7 +115,7 @@ Node.prototype.findByLabel = function (path) {
 }
 
 Node.prototype.findChild = function (path, method) {
-  var child = this.children[path[0]]
+  let child = this.children[path[0]]
   if (child !== undefined && (child.numberOfChildren > 0 || child.handlers[method] !== null)) {
     if (path.slice(0, child.prefix.length) === child.prefix) {
       return child
@@ -131,7 +131,7 @@ Node.prototype.findChild = function (path, method) {
 }
 
 Node.prototype.findVersionChild = function (version, path, method) {
-  var child = this.children[path[0]]
+  let child = this.children[path[0]]
   if (child !== undefined && (child.numberOfChildren > 0 || child.getVersionHandler(version, method) !== null)) {
     if (path.slice(0, child.prefix.length) === child.prefix) {
       return child
@@ -149,11 +149,11 @@ Node.prototype.findVersionChild = function (version, path, method) {
 Node.prototype.setHandler = function (method, handler, params, store) {
   if (!handler) return
 
-  assert(
+ /*  assert(
     this.handlers[method] !== undefined,
     `There is already an handler with method '${method}'`
   )
-
+ */
   this.handlers[method] = {
     handler: handler,
     params: params,
@@ -166,10 +166,10 @@ Node.prototype.setVersionHandler = function (version, method, handler, params, s
   if (!handler) return
 
   const handlers = this.versions.get(version) || new Handlers()
-  assert(
+  /* assert(
     handlers[method] === null,
     `There is already an handler with version '${version}' and method '${method}'`
-  )
+  ) */
 
   handlers[method] = {
     handler: handler,
@@ -185,19 +185,19 @@ Node.prototype.getHandler = function (method) {
 }
 
 Node.prototype.getVersionHandler = function (version, method) {
-  var handlers = this.versions.get(version)
+  let handlers = this.versions.get(version)
   return handlers === null ? handlers : handlers[method]
 }
 
 Node.prototype.prettyPrint = function (prefix, tail) {
-  var paramName = ''
-  var handlers = this.handlers || {}
-  var methods = Object.keys(handlers).filter(method => handlers[method] && handlers[method].handler)
+  let paramName = ''
+  let handlers = this.handlers || {}
+  let methods = Object.keys(handlers).filter(method => handlers[method] && handlers[method].handler)
 
   if (this.prefix === ':') {
     methods.forEach((method, index) => {
-      var params = this.handlers[method].params
-      var param = params[params.length - 1]
+      let params = this.handlers[method].params
+      let param = params[params.length - 1]
       if (methods.length > 1) {
         if (index === 0) {
           paramName += param + ` (${method})\n`
@@ -213,11 +213,11 @@ Node.prototype.prettyPrint = function (prefix, tail) {
     paramName = ` (${methods.join('|')})`
   }
 
-  var tree = `${prefix}${tail ? '└── ' : '├── '}${this.prefix}${paramName}\n`
+  let tree = `${prefix}${tail ? '└── ' : '├── '}${this.prefix}${paramName}\n`
 
   prefix = `${prefix}${tail ? '    ' : '│   '}`
   const labels = Object.keys(this.children)
-  for (var i = 0; i < labels.length - 1; i++) {
+  for (let i = 0; i < labels.length - 1; i++) {
     tree += this.children[labels[i]].prettyPrint(prefix, false)
   }
   if (labels.length > 0) {
@@ -227,10 +227,10 @@ Node.prototype.prettyPrint = function (prefix, tail) {
 }
 
 function buildHandlers (handlers) {
-  var code = `handlers = handlers || {}
+  let code = `handlers = handlers || {}
   `
-  for (var i = 0; i < http.METHODS.length; i++) {
-    var m = http.METHODS[i]
+  for (let i = 0; i < http.METHODS.length; i++) {
+    const m = http.METHODS[i]
     code += `this['${m}'] = handlers['${m}'] || null
     `
   }
